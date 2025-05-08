@@ -9,6 +9,6 @@ router.get('/', AffiliateController.getAllAffiliates);
 router.get('/:id', AffiliateController.getAffiliateById);
 router.put('/:id', AffiliateController.updateAffiliate);
 router.delete('/:id', AffiliateController.deleteAffiliate);
-router.post('/validate-access-code', AffiliateController.validateAccessCode);
+router.get('/validate-access-code/:access_code', AffiliateController.validateAccessCode);
 
 export default router; 

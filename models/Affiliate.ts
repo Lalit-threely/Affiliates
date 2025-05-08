@@ -18,17 +18,16 @@ export interface AffiliateAttributes {
   access_code: string;
   role: AffiliateRole;
   password: string | null;
-  verified: boolean;
-  wallet_address: string | null;
+  verified?: boolean;
   path: string;
   tag: string | null;
-  status: AffiliateStatus;
+  status?: AffiliateStatus;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date | null;
 }
 
-export interface AffiliateCreationAttributes extends Optional<AffiliateAttributes, 'id' | 'parent_id' | 'password' | 'wallet_address' | 'tag' | 'path'> {}
+export interface AffiliateCreationAttributes extends Optional<AffiliateAttributes, 'id' | 'parent_id' | 'password' | 'tag' | 'path'> {}
 
 const Affiliate = sequelize.define<Model<AffiliateAttributes, AffiliateCreationAttributes>>(
   'Affiliate',
@@ -73,11 +72,6 @@ const Affiliate = sequelize.define<Model<AffiliateAttributes, AffiliateCreationA
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    wallet_address: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      unique: true,
-    },
     path: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -89,25 +83,13 @@ const Affiliate = sequelize.define<Model<AffiliateAttributes, AffiliateCreationA
     status: {
       type: DataTypes.ENUM('active', 'inactive', 'suspended'),
       allowNull: false,
-      defaultValue: 'active',
+      defaultValue: 'inactive',
     },
   },
   {
     tableName: 'Affiliates',
     timestamps: true,
     paranoid: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['email'],
-      },
-      {
-        fields: ['id'],
-      },
-      {
-        fields: ['access_code'],
-      },
-    ],
   }
 );
 

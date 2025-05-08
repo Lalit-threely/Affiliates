@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import { sequelize } from './models/index';
 import affiliateRoutes from './routes/affiliate';
-
+import authRoutes from './routes/auth';
 dotenv.config();
 
 const app = express();
@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/affiliates', affiliateRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -31,7 +32,7 @@ const startServer = async () => {
     console.log('Database connection has been established successfully.');
     
     // Sync database models
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: false });
     console.log('Database models synchronized.');
 
     app.listen(port, () => {

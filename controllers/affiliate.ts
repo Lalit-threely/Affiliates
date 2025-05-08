@@ -3,27 +3,23 @@ import Affiliate, { AffiliateAttributes } from '../models/Affiliate';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
 import { Model } from 'sequelize';
+import { createAffiliateUser} from '../services/affiliate';
 
 export const createAffiliate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const affiliateData: AffiliateAttributes = req.body;
-    
-    // Generate access code if not provided
-    if (!affiliateData.access_code) {
-      affiliateData.access_code = uuidv4().slice(0, 8);
-    }
+    // const userData = req.session.user;
+    const userData = {
+      id:1234,
+      name: 'Tria Admin',
+      email: 'admin@tria.so',
+      verified: true,
+    };
 
-    // Hash password if provided
-    if (affiliateData.password) {
-      affiliateData.password = await bcrypt.hash(affiliateData.password, 10);
-    }
-
-    const affiliate = await Affiliate.create(affiliateData);
-    res.status(201).json({
-      success: true,
-      data: affiliate,
-      message: 'Affiliate created successfully'
-    });
+    const affiliate = await createAffiliateUser(affiliateData,userData);
+    const { status } = affiliate.response;
+    const { message, data } = affiliate.response;
+    res.status(affiliate.statusCode).send({ status, message, data });
   } catch (error) {
     next(error);
   }
@@ -124,7 +120,7 @@ export const deleteAffiliate = async (req: Request, res: Response, next: NextFun
 
 export const validateAccessCode = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { access_code } = req.body;
+    const  access_code   = req.params.access_code;
 
     if (!access_code) {
       res.status(400).json({

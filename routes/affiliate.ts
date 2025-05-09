@@ -1,5 +1,6 @@
 import express from 'express';
 import * as AffiliateController from '../controllers/affiliate';
+import { isAuth } from '../middleware/isAuth';
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ const router = express.Router();
 router.post('/', AffiliateController.createAffiliate);
 router.get('/', AffiliateController.getAllAffiliates);
 router.get('/:id', AffiliateController.getAffiliateById);
-router.put('/:id', AffiliateController.updateAffiliate);
+router.put('/', isAuth, AffiliateController.updateAffiliate);
 router.delete('/:id', AffiliateController.deleteAffiliate);
 router.get('/validate-access-code/:access_code', AffiliateController.validateAccessCode);
 

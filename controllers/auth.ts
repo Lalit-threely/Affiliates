@@ -101,7 +101,6 @@ export const login = async (
     }
     const userData = await Affiliate.findOne({
       where: { email },
-      raw: true,
       attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
     });
     const user = userData?.get();
@@ -124,8 +123,11 @@ export const login = async (
         .json({ success: false, message: 'Invalid credentials' });
     }
 
+    if (!req.session) {
+      req.session = {};
+    }
+
     // Store user details in the session
-    //@ts-ignore
     req.session.user = {
       id: user.id,
       email: user.email,
@@ -160,7 +162,7 @@ export const resetPassword = async (
         .json({ success: false, message: 'Email is required' });
     }
 
-    const userData = await Affiliate.findOne({ where: { email }, raw: true });
+    const userData = await Affiliate.findOne({ where: { email }});
     const user = userData?.get();
     if (!user) {
       return res
@@ -239,7 +241,7 @@ export const verifyPassword = async (
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const [updated] = await Affiliate.update(
-      { password: hashedPassword, verified: true },
+      { password: hashedPassword, verified: true, status: 'active'},
       { where: { email } }
     );
 
@@ -253,7 +255,6 @@ export const verifyPassword = async (
 
     const userData = await Affiliate.findOne({
       where: { email },
-      raw: true,
       attributes: {
         exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
       },
@@ -266,8 +267,11 @@ export const verifyPassword = async (
         .json({ success: false, message: 'User not found' });
     }
 
+    if (!req.session) {
+      req.session = {};
+    }
+
     // Store user details in the session
-    //@ts-ignore
     req.session.user = {
       id: user.id,
       email: user.email,

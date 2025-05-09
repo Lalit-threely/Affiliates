@@ -5,7 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 export enum AffiliateRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
-  AFFILIATE = 'AFFILIATE'
+  AFFILIATE = 'AFFILIATE',
+  COMMUNITY_HEAD = 'COMMUNITY_HEAD'
 }
 
 export type AffiliateStatus = 'active' | 'inactive' | 'suspended';
@@ -14,6 +15,7 @@ export interface AffiliateAttributes {
   id: string;
   parent_id: string | null;
   name: string;
+  tria_name?: string;
   email: string;
   access_code: string;
   role: AffiliateRole;
@@ -44,6 +46,11 @@ const Affiliate = sequelize.define<Model<AffiliateAttributes, AffiliateCreationA
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    tria_name: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
     email: {
       type: DataTypes.STRING,

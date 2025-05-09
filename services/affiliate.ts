@@ -4,9 +4,10 @@ import { sendMemberVerificationEmail } from "./email";
 import * as responseHandler from '../utils/helper/responseHandler';
 import httpStatus from 'http-status';
 import { userData } from "../types";
-import Affiliate, { AffiliateCreationAttributes } from "../models/Affiliate";
+import Affiliate, { AffiliateCreationAttributes, AffiliateRole } from "../models/Affiliate";
 import { sequelize } from "../models";
 import { v4 as uuidv4 } from 'uuid';
+import { getRoleName } from "../utils/constants";
 
 export const createAffiliateUser = async (affiliateData: AffiliateCreationAttributes, userData: userData) => {
     const transaction = await sequelize.transaction();
@@ -89,7 +90,7 @@ export const createAffiliateUser = async (affiliateData: AffiliateCreationAttrib
 
 export const sendVerificationEmail = async (affiliateData: AffiliateCreationAttributes, userData: userData) => {
     try {
-    const {email , name } = affiliateData;
+    const {email, name, role } = affiliateData;
     const emailCode = generateCode();
     const ttl = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days 
 
@@ -103,7 +104,8 @@ export const sendVerificationEmail = async (affiliateData: AffiliateCreationAttr
     const encodedPayload = encodeData({ code: emailCode, email: email });
 
     const verificationLink = `${process.env.FRONTEND_URL}/auth/create-password?code=${encodedPayload}`;
-    const roleName = 'Affiliate';
+    // Get role name from constants
+    const roleName = getRoleName(role as AffiliateRole);
 
     await sendMemberVerificationEmail(
       email,
